@@ -24,7 +24,8 @@ public class AccountBalanceRestResource {
     @RequestMapping(value = "/seed/{seed}", method = RequestMethod.GET, produces = "application/json")
     public BaseResponse<AccountSeed> getBalance(@PathVariable("seed") int seed){
 
-        return  new LogDecoratorHandler<>(new GetAccountSeedHandler()).handle(new GetAccountSeed(seed));
+        AccountSeed response= new LogDecoratorHandler<>(new GetAccountSeedHandler()).handle(new GetAccountSeed(seed));
+        return new BaseResponse<>(response);
 
     }
 }

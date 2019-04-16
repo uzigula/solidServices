@@ -2,28 +2,23 @@ package com.mck.samples.webapp.crosscuttingconcerns;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mck.samples.webapp.infrastructure.MyExcception;
 import com.mck.samples.webapp.mediator.*;
-import com.oracle.javafx.jmx.json.JSONException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.slf4j.MDC;
 
-import java.io.UncheckedIOException;
-import java.lang.reflect.Constructor;
 import java.util.UUID;
 
 
 public class LogDecoratorHandler<TCommand extends IAmCommand<TResponse>, TResponse> implements IAmCommandHandler<TCommand, TResponse> {
     private final IAmCommandHandler<TCommand, TResponse> innerHandler;
 
-
     public LogDecoratorHandler(IAmCommandHandler<TCommand, TResponse> innerHandler) {
 
         this.innerHandler = innerHandler;
     }
 
-    public TResponse handle(TCommand command)  {
+    public TResponse handle(TCommand command)  throws Exception {
 
         ObjectMapper objectMapper = new ObjectMapper();
         Logger logger = LogManager.getLogger(command.getClass());
@@ -36,9 +31,11 @@ public class LogDecoratorHandler<TCommand extends IAmCommand<TResponse>, TRespon
             return result;
 
         }
+
         catch (JsonProcessingException e){
             logger.error("Error", e);
-            throw new Exception(e);
+
+             throw new Exception(e);
         }
         catch(Exception e) {
             logger.error("Error", e);
@@ -48,27 +45,6 @@ public class LogDecoratorHandler<TCommand extends IAmCommand<TResponse>, TRespon
             MDC.clear();
             logger.debug("MDC cleaned");
         }
-    }
-
-    private  TResponse create(){
-        try {
-            Class<?> clz = load(TResponse);
-            Constructor<?> ctor = clz.getConstructor();
-            TResponse builder = ctor.newInstance();
-            return builder;
-        }
-        catch(Exception e){
-            throw new ClassCastException(account.getClass().getName() + "ObjectBuilder" + " does not implement IAmSomeInterface<" + type.getClass().getName() + ">");
-        }
-
-    }
-
-    private static <T> Class<? extends IAmSomeInterface<T>> load(T type)
-            throws ClassNotFoundException
-    {
-        Class<?> any = Class.forName(type.getClass().getName() + "IAmSomeInterface");
-        Class<? extends IAmReportModelBuilder<T>> creator = (Class<? extends IAmSomeInterface<T>>) any;
-        return creator;
     }
 }
 
