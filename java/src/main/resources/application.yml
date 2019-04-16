@@ -1,0 +1,4 @@
+spring:
+  profiles:
+    active: ${MY_ENV}
+    include: application-${MY_ENV}.yml
