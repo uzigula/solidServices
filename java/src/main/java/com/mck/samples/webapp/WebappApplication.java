@@ -17,7 +17,7 @@ public class WebappApplication {
 		SpringApplication.run(WebappApplication.class, args);
 	}
 
-	@RequestMapping("/")
+	@RequestMapping("/hi")
 	public String hi(){
 		return applicationName + " Hola, soy una webapp desde un contenedor ;)";
 	}
